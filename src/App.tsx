@@ -1,12 +1,13 @@
 import React from 'react';
-import './App.scss';
+import Header from './components/Header/Header';
 
-import logo from './assets/investment-calculator-logo.png';
+import './index.scss';
 
 function App() {
   const calculateHandler = (userInput: any): any => {
     // Should be triggered when form is submitted
     // You might not directly want to bind it to the submit event on the form though...
+    console.log('here i am');
 
     const yearlyData = []; // per-year results
 
@@ -33,10 +34,7 @@ function App() {
 
   return (
     <div>
-      <header className="header">
-        <img src={logo} alt="logo" />
-        <h1>Investment Calculator</h1>
-      </header>
+      <Header/>
 
       <form className="form">
         <div className="input-group">
@@ -65,7 +63,7 @@ function App() {
           <button type="reset" className="buttonAlt">
             Reset
           </button>
-          <button type="submit" className="button">
+          <button type="submit" onClick={calculateHandler} className="button">
             Calculate
           </button>
         </p>
