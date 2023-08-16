@@ -6,9 +6,11 @@ import ResultsTable from './components/ResultsTable/ResultsTable';
 import './index.scss';
 
 
-interface CalculatorType {
-        calculateHandler: (userInput: any) => any;
-    };
+interface DataHandlerType {
+    calculateHandler: (userInput: any) => any;
+    getResults: () => YearlyDataType[];
+    hideResultsHandler: (flag: boolean) => void;
+};
 
 interface YearlyDataType {
     year: number,
@@ -19,17 +21,20 @@ interface YearlyDataType {
 
 function App() {
     const initialResults: YearlyDataType[] = [];
-    const [results, setResults] = useState(initialResults); 
+    const [results, setResults] = useState<YearlyDataType[]>(initialResults);
+    const [initialInvestment, setInitialInvestment] = useState<number>(0);
+    const [hideResults, setHideResults] = useState<boolean>(true);
 
-    const calculator: CalculatorType = {
+    const dataHandler: DataHandlerType = {
         calculateHandler: (userInput: any): any => {
             const yearlyData =[]; // per-year results
 
-            let currentSavings = userInput['current-savings']; 
+            let currentSavings = Number(userInput['current-savings']); 
             const yearlyContribution = userInput['yearly-contribution'];
             const expectedReturn = userInput['expected-return'] / 100;
             const duration = userInput['duration'];
 
+            setInitialInvestment(currentSavings);
             // The below code calculates yearly results (total savings, interest etc)
             for (let i = 0; i < duration; i++) {
                 const yearlyInterest = currentSavings * expectedReturn;
@@ -37,25 +42,36 @@ function App() {
                 yearlyData.push({
                     year: i + 1,
                     yearlyInterest: yearlyInterest,
-                    'savingsEndOfYear': currentSavings,
+                    savingsEndOfYear: currentSavings,
                     yearlyContribution: yearlyContribution,
                 });
             };
             setResults(yearlyData);
-            console.log('pause');
+        },
+
+        getResults: (): YearlyDataType[] => {
+            return results;
+        },
+
+        hideResultsHandler: (flag: boolean): void => {
+            setHideResults(flag);
         }
     };
 
     return (
-        <div>
+        <React.Fragment>
             <Header/>
-
-            <UserInput onCalculate={calculator.calculateHandler}/> 
-          {/* Todo: Show below table conditionally (only once result data is available) */}
-          {/* Show fallback text if no data is available */}
-
-            <ResultsTable/> 
-        </div>
+            <UserInput 
+                onCalculate={dataHandler.calculateHandler}
+                onHideResults={dataHandler.hideResultsHandler}
+            /> 
+            {hideResults === false?
+                <ResultsTable 
+                    onGetResults={dataHandler.getResults}
+                    initialInvestment={initialInvestment}
+                />:
+            null}
+        </React.Fragment>
     );
 }
 

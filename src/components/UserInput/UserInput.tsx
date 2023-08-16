@@ -3,7 +3,8 @@ import React, {FormEvent, ChangeEvent, useState} from 'react';
 import '../../index.scss';
 
 interface UserInputProps {
-   onCalculate(userInput: any): any  
+   onCalculate(userInput: any): any;
+   onHideResults(flag: boolean): void;
 }
 
 const defaultInput = {
@@ -13,15 +14,17 @@ const defaultInput = {
     "duration": 10
 }
 
-const UserInput = ({onCalculate}: UserInputProps) => {
+const UserInput = ({onCalculate, onHideResults}: UserInputProps) => {
     const [userInput, setUserInput] = useState(defaultInput);
 
     const submitHandler = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
+        onHideResults(false);
         onCalculate(userInput);
     }
 
     const resetHandler = (): void => {
+        onHideResults(true);
         setUserInput(defaultInput);
     }
 
